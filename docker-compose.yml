@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver_container
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "*davidRipalda8446"
+      ACCEPT_EULA: "Y"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+
+  sql_init:
+    build:
+      context: .
+      dockerfile: sql-init.Dockerfile
+    container_name: sql_init_container
+    depends_on:
+      - sqlserver
+    restart: "on-failure"
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: node_backend
+    ports:
+      - "3000:3000"
+    environment:
+      DB_SERVER: sqlserver
+      DB_USER: sa
+      DB_PASSWORD: "*davidRipalda8446"
+      DB_NAME: nur_proyecto
+    depends_on:
+      - sqlserver
+      - sql_init
+    volumes:
+      - .:/app
+    command: >
+      sh -c "
+        echo 'Esperando base de datos...' &&
+        sleep 10 &&
+        npm run dev
+      "
+
+volumes:
+  sqlserver_data:
