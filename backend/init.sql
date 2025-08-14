@@ -1,4 +1,4 @@
-IF NOT EXITS (SELECT * FROM sys.databases where name = 'nur_proyecto')
+IF NOT EXISTS (SELECT * FROM sys.databases where name = 'nur_proyecto')
   CREATE DATABASE nur_proyecto;
 GO
 
