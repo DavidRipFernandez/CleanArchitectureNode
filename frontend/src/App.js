@@ -12,7 +12,7 @@ const PrivateRoute = ({ children }) => {
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter basename="/ca-frontend">
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route 
