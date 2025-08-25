@@ -33,7 +33,7 @@ pipeline {
 
         stage('Clean-Up Old Files') {
             steps {
-                powershell(returnStdout: true, script: 'Remove-Item -Path "C:\\nginx\\html\\sys-frontend\\*" -Recurse -Force')
+                powershell(returnStdout: true, script: 'Remove-Item -Path "C:\\nginx\\html\\ca-frontend\\*" -Recurse -Force')
                 echo 'Clean-Up done.'
             }
         }
@@ -41,7 +41,7 @@ pipeline {
         stage('Copy Build to Nginx') {
             steps {
                 script {
-                    String command = "Copy-Item -Path \"${WORKSPACE}\\frontend\\build\\*\" -Destination \"C:\\nginx\\html\\sys-frontend\\\" -Recurse -Force"
+                    String command = "Copy-Item -Path \"${WORKSPACE}\\frontend\\build\\*\" -Destination \"C:\\nginx\\html\\ca-frontend\\\" -Recurse -Force"
                     echo command
                     powershell(returnStdout: true, script: command)
                     echo 'Copy files done.'
