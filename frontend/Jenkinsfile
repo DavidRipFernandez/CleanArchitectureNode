@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Stop nginx process') {
             steps {
-                powershell(returnStdout: true, script: 'net stop nginx')
+                powershell('net stop nginx')
                 echo 'The nginx process has been stopped.'
             }
         }
@@ -28,21 +28,16 @@ pipeline {
                 stage('DEV') {
                     steps {
                         dir('frontend') {
-                            powershell(returnStdout: true, script: '''
-                                $env:REACT_APP_BASENAME = "/grupo-01/dev"
+                            powershell('''
+                                $env:REACT_APP_BASENAME="/grupo-01/dev"
                                 npm run build
                             ''')
                         }
                         script {
                             def targetPath = "C:\\nginx\\html\\grupo-01\\dev\\"
-                            powershell(returnStdout: true, script: "Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
-                            powershell(returnStdout: true, script: "New-Item -ItemType Directory -Force -Path \"${targetPath}\"")
-                            powershell(returnStdout: true, script: "Copy-Item -Path \"${WORKSPACE}\\frontend\\build\\*\" -Destination \"${targetPath}\" -Recurse -Force")
-                            // Reescribir <base href>
-                            powershell(returnStdout: true, script: '''
-                                $indexPath = "C:\\nginx\\html\\grupo-01\\dev\\index.html"
-                                (Get-Content $indexPath) -replace '<base href="/" />', '<base href="/grupo-01/dev/" />' | Set-Content $indexPath
-                            ''')
+                            powershell("Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
+                            powershell("New-Item -ItemType Directory -Force -Path \"${targetPath}\"")
+                            powershell("Copy-Item -Path \"${WORKSPACE}\\frontend\\build\\*\" -Destination \"${targetPath}\" -Recurse -Force")
                             echo "✅ Deploy to DEV done."
                         }
                     }
@@ -51,21 +46,16 @@ pipeline {
                 stage('TEST') {
                     steps {
                         dir('frontend') {
-                            powershell(returnStdout: true, script: '''
-                                $env:REACT_APP_BASENAME = "/grupo-01/test"
+                            powershell('''
+                                $env:REACT_APP_BASENAME="/grupo-01/test"
                                 npm run build
                             ''')
                         }
                         script {
                             def targetPath = "C:\\nginx\\html\\grupo-01\\test\\"
-                            powershell(returnStdout: true, script: "Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
-                            powershell(returnStdout: true, script: "New-Item -ItemType Directory -Force -Path \"${targetPath}\"")
-                            powershell(returnStdout: true, script: "Copy-Item -Path \"${WORKSPACE}\\frontend\\build\\*\" -Destination \"${targetPath}\" -Recurse -Force")
-                            // Reescribir <base href>
-                            powershell(returnStdout: true, script: '''
-                                $indexPath = "C:\\nginx\\html\\grupo-01\\test\\index.html"
-                                (Get-Content $indexPath) -replace '<base href="/" />', '<base href="/grupo-01/test/" />' | Set-Content $indexPath
-                            ''')
+                            powershell("Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
+                            powershell("New-Item -ItemType Directory -Force -Path \"${targetPath}\"")
+                            powershell("Copy-Item -Path \"${WORKSPACE}\\frontend\\build\\*\" -Destination \"${targetPath}\" -Recurse -Force")
                             echo "✅ Deploy to TEST done."
                         }
                     }
@@ -74,21 +64,16 @@ pipeline {
                 stage('STAGING') {
                     steps {
                         dir('frontend') {
-                            powershell(returnStdout: true, script: '''
-                                $env:REACT_APP_BASENAME = "/grupo-01/staging"
+                            powershell('''
+                                $env:REACT_APP_BASENAME="/grupo-01/staging"
                                 npm run build
                             ''')
                         }
                         script {
                             def targetPath = "C:\\nginx\\html\\grupo-01\\staging\\"
-                            powershell(returnStdout: true, script: "Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
-                            powershell(returnStdout: true, script: "New-Item -ItemType Directory -Force -Path \"${targetPath}\"")
-                            powershell(returnStdout: true, script: "Copy-Item -Path \"${WORKSPACE}\\frontend\\build\\*\" -Destination \"${targetPath}\" -Recurse -Force")
-                            // Reescribir <base href>
-                            powershell(returnStdout: true, script: '''
-                                $indexPath = "C:\\nginx\\html\\grupo-01\\staging\\index.html"
-                                (Get-Content $indexPath) -replace '<base href="/" />', '<base href="/grupo-01/staging/" />' | Set-Content $indexPath
-                            ''')
+                            powershell("Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
+                            powershell("New-Item -ItemType Directory -Force -Path \"${targetPath}\"")
+                            powershell("Copy-Item -Path \"${WORKSPACE}\\frontend\\build\\*\" -Destination \"${targetPath}\" -Recurse -Force")
                             echo "✅ Deploy to STAGING done."
                         }
                     }
@@ -98,7 +83,7 @@ pipeline {
 
         stage('Start nginx process') {
             steps {
-                powershell(returnStdout: true, script: 'net start nginx')
+                powershell('net start nginx')
                 echo 'The nginx process has been started.'
             }
         }
