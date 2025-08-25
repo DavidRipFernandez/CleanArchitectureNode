@@ -28,7 +28,8 @@ pipeline {
                 stage('DEV') {
                     steps {
                         dir('frontend') {
-                            powershell -Command "$env:REACT_APP_BASENAME='/grupo-01/dev'; npm run build"
+                            powershell(returnStdout: true, script: 'set REACT_APP_BASENAME=/grupo-01/dev')
+                            powershell(returnStdout: true, script: 'npm run build')
                         }
                         script {
                             def targetPath = "C:\\nginx\\html\\grupo-01\\dev\\"
@@ -43,7 +44,8 @@ pipeline {
                 stage('TEST') {
                     steps {
                         dir('frontend') {
-                            powershell -Command "$env:REACT_APP_BASENAME='/grupo-01/test'; npm run build"
+                            powershell(returnStdout: true, script: 'set REACT_APP_BASENAME=/grupo-01/test')
+                            powershell(returnStdout: true, script: 'npm run build')
                         }
                         script {
                             def targetPath = "C:\\nginx\\html\\grupo-01\\test\\"
@@ -58,7 +60,8 @@ pipeline {
                 stage('STAGING') {
                     steps {
                         dir('frontend') {
-                            powershell -Command "$env:REACT_APP_BASENAME='/grupo-01/staging'; npm run build"
+                            powershell(returnStdout: true, script: 'set REACT_APP_BASENAME=/grupo-01/staging')
+                            powershell(returnStdout: true, script: 'npm run build')
                         }
                         script {
                             def targetPath = "C:\\nginx\\html\\grupo-01\\staging\\"
