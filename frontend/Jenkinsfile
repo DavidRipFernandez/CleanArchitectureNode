@@ -31,20 +31,42 @@ pipeline {
             }
         }
 
-        stage('Clean-Up Old Files') {
-            steps {
-                powershell(returnStdout: true, script: 'Remove-Item -Path "C:\\nginx\\html\\ca-frontend\\*" -Recurse -Force')
-                echo 'Clean-Up done.'
-            }
-        }
+        stage('Deploy in Parallel') {
+            parallel {
+                stage('Deploy DEV') {
+                    steps {
+                        script {
+                            def targetPath = "C:\\nginx\\html\\grupo-01\\dev\\"
+                            powershell(returnStdout: true, script: "Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
+                            powershell(returnStdout: true, script: "New-Item -ItemType Directory -Force -Path \"${targetPath}\"")
+                            powershell(returnStdout: true, script: "Copy-Item -Path \"${WORKSPACE}\\frontend\\build\\*\" -Destination \"${targetPath}\" -Recurse -Force")
+                            echo "✅ Deploy to DEV done."
+                        }
+                    }
+                }
 
-        stage('Copy Build to Nginx') {
-            steps {
-                script {
-                    String command = "Copy-Item -Path \"${WORKSPACE}\\frontend\\build\\*\" -Destination \"C:\\nginx\\html\\ca-frontend\\\" -Recurse -Force"
-                    echo command
-                    powershell(returnStdout: true, script: command)
-                    echo 'Copy files done.'
+                stage('Deploy TEST') {
+                    steps {
+                        script {
+                            def targetPath = "C:\\nginx\\html\\grupo-01\\test\\"
+                            powershell(returnStdout: true, script: "Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
+                            powershell(returnStdout: true, script: "New-Item -ItemType Directory -Force -Path \"${targetPath}\"")
+                            powershell(returnStdout: true, script: "Copy-Item -Path \"${WORKSPACE}\\frontend\\build\\*\" -Destination \"${targetPath}\" -Recurse -Force")
+                            echo "✅ Deploy to TEST done."
+                        }
+                    }
+                }
+
+                stage('Deploy STAGING') {
+                    steps {
+                        script {
+                            def targetPath = "C:\\nginx\\html\\grupo-01\\staging\\"
+                            powershell(returnStdout: true, script: "Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
+                            powershell(returnStdout: true, script: "New-Item -ItemType Directory -Force -Path \"${targetPath}\"")
+                            powershell(returnStdout: true, script: "Copy-Item -Path \"${WORKSPACE}\\frontend\\build\\*\" -Destination \"${targetPath}\" -Recurse -Force")
+                            echo "✅ Deploy to STAGING done."
+                        }
+                    }
                 }
             }
         }
@@ -59,10 +81,10 @@ pipeline {
 
     post {
         always {
-            echo 'Proceso de despliegue del frontend completado.'
+            echo '🚀 Proceso de despliegue del frontend completado en todos los ambientes dentro de grupo-01.'
         }
         failure {
-            echo 'El despliegue falló, revisa los logs para más detalles.'
+            echo '❌ El despliegue falló en algún ambiente, revisa los logs para más detalles.'
         }
     }
 }
