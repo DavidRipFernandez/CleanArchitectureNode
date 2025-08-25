@@ -11,7 +11,7 @@ pipeline {
 
         stage('Checkout Github Project') {
             steps {
-                git(url: 'https://github.com/DavidRipFernandez/CleanArchitectureNode', branch: 'master')
+                git(url: 'https://github.com/DavidRipFernandez/CleanArchitectureNode', branch: 'main')
             }
         }
 
@@ -37,7 +37,6 @@ pipeline {
         stage('Copy Files') {
             steps {
                 script {
-                    // Vite genera 'dist' (minúsculas)
                     String command = "Copy-Item -Path \"${WORKSPACE}\\dist\\*\" -Destination \"C:\\nginx\\html\\sys-frontend\\\" -Recurse -Force"
                     echo command
                     powershell(returnStdout: true, script: command)
