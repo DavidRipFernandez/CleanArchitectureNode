@@ -4,62 +4,54 @@ pipeline {
     stages {
         stage('Stop nginx process') {
             steps {
-                powershell(returnStdout:true, script:'net stop nginx')
-                println('The nginx process has been stopped.')
+                powershell(returnStdout: true, script: 'net stop nginx')
+                echo 'The nginx process has been stopped.'
             }
-        }        
+        }
 
         stage('Checkout Github Project') {
             steps {
-                git(url:'https://github.com/DavidRipFernandez/CleanArchitectureNode.git', branch:'main')
+                git(url: 'https://github.com/DavidRipFernandez/CleanArchitectureNode', branch: 'master')
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                dir('frontend') {
-                    bat 'npm install'
-                }
+                bat 'npm install'
             }
         }
 
-        stage('Build React App') {
+        stage('Build withVite') {
             steps {
-                dir('frontend') {
-                    bat 'npm run build'
-                }
+                bat 'npx tsc -b && npx vite build'
             }
         }
 
-		stage('Clean-Up Old Files') {
-			steps {
-				powershell '''
-					if (!(Test-Path "C:\\nginx\\html\\ca-frontend")) {
-						New-Item -ItemType Directory -Path "C:\\nginx\\html\\ca-frontend" | Out-Null
-					}
-					Remove-Item -Path "C:\\nginx\\html\\ca-frontend\\*" -Recurse -Force -ErrorAction SilentlyContinue
-				'''
-				println('Clean-Up done.')
-			}
-		}
+        stage('Clean-Up Old Files') {
+            steps {
+                powershell(returnStdout: true, script: 'Remove-Item -Path "C:\\nginx\\html\\sys-frontend\\*" -Recurse -Force')
+                echo 'Clean-Up done.'
+            }
+        }
 
-		stage('Copy Files') {
-			steps {
-				script {
-					String command = "Copy-Item -Path \"${WORKSPACE}\\frontend\\build\\*\" -Destination \"C:\\nginx\\html\\ca-frontend\\\" -Recurse -Force"
-					println(command)
-					powershell(returnStdout:true, script:command)
-					println('Copy files done.')
-				}
-			}
-		}
+        stage('Copy Files') {
+            steps {
+                script {
+                    // Vite genera 'dist' (minúsculas)
+                    String command = "Copy-Item -Path \"${WORKSPACE}\\dist\\*\" -Destination \"C:\\nginx\\html\\sys-frontend\\\" -Recurse -Force"
+                    echo command
+                    powershell(returnStdout: true, script: command)
+                    echo 'Copy files done.'
+                }
+            }
+        }
 
         stage('Start nginx process') {
             steps {
-                powershell(returnStdout:true, script:'net start nginx')
-                println('The nginx process has been started.')
+                powershell(returnStdout: true, script: 'net start nginx')
+                echo 'The nginx process has been started.'
             }
-        }                        
+        }
     }
 
     post {
@@ -67,7 +59,7 @@ pipeline {
             echo 'Proceso de despliegue del frontend completado.'
         }
         failure {
-            echo 'El despliegue falló, revisa los logs para más detalles.'
+            echo 'El despliegue falló, revisa los logs para mas detalles.'
         }
     }
 }
