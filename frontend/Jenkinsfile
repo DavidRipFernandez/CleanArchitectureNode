@@ -1,47 +1,73 @@
 pipeline {
     agent any
-    
-    tools {
-        nodejs "NodeJS_20"   // asegúrate de tenerlo configurado en Jenkins
-    }
 
     stages {
-        stage('Checkout del proyecto') {
+        stage('Stop nginx process') {
             steps {
-                git branch: 'main', url: 'https://github.com/DavidRipFernandez/CleanArchitectureNode'
+                powershell(returnStdout:true, script:'net stop nginx')
+                println('The nginx process has been stopped.')
+            }
+        }        
+
+        stage('Checkout Github Project') {
+            steps {
+                git(url:'https://github.com/DavidRipFernandez/CleanArchitectureNode.git', branch:'main')
             }
         }
 
-        stage('Instalar dependencias') {
+        stage('Install Dependencies') {
             steps {
                 dir('frontend') {
-                    sh 'npm install'
+                    bat 'npm install'
                 }
             }
         }
 
-        stage('Correr tests') {
+        stage('Build React App') {
             steps {
                 dir('frontend') {
-                    sh 'npm test -- --watchAll=false'
+                    bat 'npm run build'
                 }
             }
         }
 
-        stage('Build') {
-            steps {
-                dir('frontend') {
-                    sh 'npm run build'
-                }
-            }
-        }
+		stage('Clean-Up Old Files') {
+			steps {
+				powershell '''
+					if (!(Test-Path "C:\\nginx\\html\\ca-frontend")) {
+						New-Item -ItemType Directory -Path "C:\\nginx\\html\\ca-frontend" | Out-Null
+					}
+					Remove-Item -Path "C:\\nginx\\html\\ca-frontend\\*" -Recurse -Force -ErrorAction SilentlyContinue
+				'''
+				println('Clean-Up done.')
+			}
+		}
 
-        stage('Archivar Build') {
+		stage('Copy Files') {
+			steps {
+				script {
+					String command = "Copy-Item -Path \"${WORKSPACE}\\frontend\\build\\*\" -Destination \"C:\\nginx\\html\\ca-frontend\\\" -Recurse -Force"
+					println(command)
+					powershell(returnStdout:true, script:command)
+					println('Copy files done.')
+				}
+			}
+		}
+
+        stage('Start nginx process') {
             steps {
-                dir('frontend') {
-                    archiveArtifacts artifacts: 'build/**', fingerprint: true
-                }
+                powershell(returnStdout:true, script:'net start nginx')
+                println('The nginx process has been started.')
             }
+        }                        
+    }
+
+    post {
+        always {
+            echo 'Proceso de despliegue del frontend completado.'
+        }
+        failure {
+            echo 'El despliegue falló, revisa los logs para más detalles.'
         }
     }
 }
