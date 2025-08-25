@@ -17,27 +17,31 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                bat 'npm install'
+                dir('frontend') {
+                    bat 'npm install'
+                }
             }
         }
 
-        stage('Build withVite') {
+        stage('Build React App') {
             steps {
-                bat 'npx tsc -b && npx vite build'
+                dir('frontend') {
+                    bat 'npm run build'
+                }
             }
         }
 
         stage('Clean-Up Old Files') {
             steps {
-                powershell(returnStdout: true, script: 'Remove-Item -Path "C:\\nginx\\html\\sys-frontend\\*" -Recurse -Force')
+                powershell(returnStdout: true, script: 'Remove-Item -Path "C:\\nginx\\html\\ca-frontend\\*" -Recurse -Force')
                 echo 'Clean-Up done.'
             }
         }
 
-        stage('Copy Files') {
+        stage('Copy Build to Nginx') {
             steps {
                 script {
-                    String command = "Copy-Item -Path \"${WORKSPACE}\\dist\\*\" -Destination \"C:\\nginx\\html\\sys-frontend\\\" -Recurse -Force"
+                    String command = "Copy-Item -Path \"${WORKSPACE}\\frontend\\build\\*\" -Destination \"C:\\nginx\\html\\ca-frontend\\\" -Recurse -Force"
                     echo command
                     powershell(returnStdout: true, script: command)
                     echo 'Copy files done.'
@@ -58,7 +62,7 @@ pipeline {
             echo 'Proceso de despliegue del frontend completado.'
         }
         failure {
-            echo 'El despliegue falló, revisa los logs para mas detalles.'
+            echo 'El despliegue falló, revisa los logs para más detalles.'
         }
     }
 }
