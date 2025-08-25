@@ -1,0 +1,47 @@
+pipeline {
+    agent any
+    
+    tools {
+        nodejs "NodeJS_20"   // asegúrate de tenerlo configurado en Jenkins
+    }
+
+    stages {
+        stage('Checkout del proyecto') {
+            steps {
+                git branch: 'main', url: 'https://github.com/DavidRipFernandez/CleanArchitectureNode'
+            }
+        }
+
+        stage('Instalar dependencias') {
+            steps {
+                dir('frontend') {
+                    sh 'npm install'
+                }
+            }
+        }
+
+        stage('Correr tests') {
+            steps {
+                dir('frontend') {
+                    sh 'npm test -- --watchAll=false'
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                dir('frontend') {
+                    sh 'npm run build'
+                }
+            }
+        }
+
+        stage('Archivar Build') {
+            steps {
+                dir('frontend') {
+                    archiveArtifacts artifacts: 'build/**', fingerprint: true
+                }
+            }
+        }
+    }
+}
