@@ -23,18 +23,13 @@ pipeline {
             }
         }
 
-        stage('Build React App') {
-            steps {
-                dir('frontend') {
-                    bat 'set PUBLIC_URL=/grupo-01/dev/ && npm run build'
-                }
-            }
-        }
-
-        stage('Deploy in Parallel') {
+        stage('Build & Deploy in Parallel') {
             parallel {
-                stage('Deploy DEV') {
+                stage('DEV') {
                     steps {
+                        dir('frontend') {
+                            powershell(returnStdout: true, script: 'set REACT_APP_BASENAME=/grupo-01/dev && npm run build')
+                        }
                         script {
                             def targetPath = "C:\\nginx\\html\\grupo-01\\dev\\"
                             powershell(returnStdout: true, script: "Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
@@ -45,12 +40,12 @@ pipeline {
                     }
                 }
 
-                stage('Deploy TEST') {
+                stage('TEST') {
                     steps {
+                        dir('frontend') {
+                            powershell(returnStdout: true, script: 'set REACT_APP_BASENAME=/grupo-01/test && npm run build')
+                        }
                         script {
-                            dir('frontend') {
-                                bat 'set PUBLIC_URL=/grupo-01/test/ && npm run build'
-                            }
                             def targetPath = "C:\\nginx\\html\\grupo-01\\test\\"
                             powershell(returnStdout: true, script: "Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
                             powershell(returnStdout: true, script: "New-Item -ItemType Directory -Force -Path \"${targetPath}\"")
@@ -60,12 +55,12 @@ pipeline {
                     }
                 }
 
-                stage('Deploy STAGING') {
+                stage('STAGING') {
                     steps {
+                        dir('frontend') {
+                            powershell(returnStdout: true, script: 'set REACT_APP_BASENAME=/grupo-01/staging && npm run build')
+                        }
                         script {
-                            dir('frontend') {
-                                bat 'set PUBLIC_URL=/grupo-01/staging/ && npm run build'
-                            }
                             def targetPath = "C:\\nginx\\html\\grupo-01\\staging\\"
                             powershell(returnStdout: true, script: "Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
                             powershell(returnStdout: true, script: "New-Item -ItemType Directory -Force -Path \"${targetPath}\"")
@@ -87,10 +82,10 @@ pipeline {
 
     post {
         always {
-            echo '🚀 Proceso de despliegue completado.'
+            echo '🚀 Despliegue completado en DEV, TEST y STAGING dentro de grupo-01.'
         }
         failure {
-            echo '❌ El despliegue falló.'
+            echo '❌ Despliegue falló, revisa los logs.'
         }
     }
 }
