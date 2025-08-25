@@ -15,27 +15,15 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                dir('frontend') {
-                    bat 'npm install'
-                }
-            }
-        }
-
-        stage('Build React App') {
-            steps {
-                dir('frontend') {
-                    bat 'npm run build'
-                }
-            }
-        }
-
         stage('Deploy in Parallel') {
             parallel {
                 stage('Deploy DEV') {
                     steps {
                         script {
+                            dir('frontend') {
+                                bat 'npm install'
+                                bat 'npm run build -- --public-url /grupo-01/dev/'
+                            }
                             def targetPath = "C:\\nginx\\html\\grupo-01\\dev\\"
                             powershell(returnStdout: true, script: "Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
                             powershell(returnStdout: true, script: "New-Item -ItemType Directory -Force -Path \"${targetPath}\"")
@@ -48,6 +36,10 @@ pipeline {
                 stage('Deploy TEST') {
                     steps {
                         script {
+                            dir('frontend') {
+                                bat 'npm install'
+                                bat 'npm run build -- --public-url /grupo-01/test/'
+                            }
                             def targetPath = "C:\\nginx\\html\\grupo-01\\test\\"
                             powershell(returnStdout: true, script: "Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
                             powershell(returnStdout: true, script: "New-Item -ItemType Directory -Force -Path \"${targetPath}\"")
@@ -60,6 +52,10 @@ pipeline {
                 stage('Deploy STAGING') {
                     steps {
                         script {
+                            dir('frontend') {
+                                bat 'npm install'
+                                bat 'npm run build -- --public-url /grupo-01/staging/'
+                            }
                             def targetPath = "C:\\nginx\\html\\grupo-01\\staging\\"
                             powershell(returnStdout: true, script: "Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
                             powershell(returnStdout: true, script: "New-Item -ItemType Directory -Force -Path \"${targetPath}\"")
@@ -81,10 +77,10 @@ pipeline {
 
     post {
         always {
-            echo '🚀 Proceso de despliegue del frontend completado en todos los ambientes dentro de grupo-01.'
+            echo '🚀 Proceso de despliegue completado.'
         }
         failure {
-            echo '❌ El despliegue falló en algún ambiente, revisa los logs para más detalles.'
+            echo '❌ El despliegue falló.'
         }
     }
 }
