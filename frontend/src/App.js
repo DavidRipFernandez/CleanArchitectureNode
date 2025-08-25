@@ -12,7 +12,7 @@ const PrivateRoute = ({ children }) => {
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter basename="/">
+      <BrowserRouter basename=".">
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route 
