@@ -15,15 +15,27 @@ pipeline {
             }
         }
 
+        stage('Install Dependencies') {
+            steps {
+                dir('frontend') {
+                    bat 'npm install'
+                }
+            }
+        }
+
+        stage('Build React App') {
+            steps {
+                dir('frontend') {
+                    bat 'set PUBLIC_URL=/grupo-01/dev/ && npm run build'
+                }
+            }
+        }
+
         stage('Deploy in Parallel') {
             parallel {
                 stage('Deploy DEV') {
                     steps {
                         script {
-                            dir('frontend') {
-                                bat 'npm install'
-                                bat 'npm run build -- --public-url /grupo-01/dev/'
-                            }
                             def targetPath = "C:\\nginx\\html\\grupo-01\\dev\\"
                             powershell(returnStdout: true, script: "Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
                             powershell(returnStdout: true, script: "New-Item -ItemType Directory -Force -Path \"${targetPath}\"")
@@ -37,8 +49,7 @@ pipeline {
                     steps {
                         script {
                             dir('frontend') {
-                                bat 'npm install'
-                                bat 'npm run build -- --public-url /grupo-01/test/'
+                                bat 'set PUBLIC_URL=/grupo-01/test/ && npm run build'
                             }
                             def targetPath = "C:\\nginx\\html\\grupo-01\\test\\"
                             powershell(returnStdout: true, script: "Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
@@ -53,8 +64,7 @@ pipeline {
                     steps {
                         script {
                             dir('frontend') {
-                                bat 'npm install'
-                                bat 'npm run build -- --public-url /grupo-01/staging/'
+                                bat 'set PUBLIC_URL=/grupo-01/staging/ && npm run build'
                             }
                             def targetPath = "C:\\nginx\\html\\grupo-01\\staging\\"
                             powershell(returnStdout: true, script: "Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
