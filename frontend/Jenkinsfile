@@ -14,11 +14,15 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Prepare Workspace') {
             steps {
-                dir('frontend') {
-                    bat 'npm install'
-                }
+                bat 'mkdir frontend-dev || echo "Directory exists"'
+                bat 'mkdir frontend-test || echo "Directory exists"'
+                bat 'mkdir frontend-staging || echo "Directory exists"'
+                
+                bat 'xcopy frontend\\* frontend-dev\\ /E /I /Y'
+                bat 'xcopy frontend\\* frontend-test\\ /E /I /Y'
+                bat 'xcopy frontend\\* frontend-staging\\ /E /I /Y'
             }
         }
 
@@ -26,8 +30,9 @@ pipeline {
             parallel {
                 stage('DEV') {
                     steps {
-                        dir('frontend') {
-                            bat 'npm run build:dev -- --output-path=build-dev'
+                        dir('frontend-dev') {
+                            bat 'npm install'
+                            bat 'npm run build:dev'
                         }
                         script {
                             def targetPath = "C:\\nginx\\html\\grupo-01\\dev\\"
@@ -39,21 +44,23 @@ pipeline {
 
                 stage('TEST') {
                     steps {
-                        dir('frontend') {
-                            bat 'npm run build:test -- --output-path=build-test'
+                        dir('frontend-test') {
+                            bat 'npm install'
+                            bat 'npm run build:test'
                         }
                         script {
                             def targetPath = "C:\\nginx\\html\\grupo-01\\test\\"
                             powershell("Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
-                            powershell("Copy-Item -Path \"${WORKSPACE}\\frontend\\build-test\\*\" -Destination \"${targetPath}\" -Recurse -Force")
+                            powershell("Copy-Item -Path \"${WORKSPACE}\\frontend-test\\build\\*\" -Destination \"${targetPath}\" -Recurse -Force")
                         }
                     }
                 }
 
                 stage('STAGING') {
                     steps {
-                        dir('frontend') {
-                            bat 'npm run build:staging -- --output-path=build-staging'
+                        dir('frontend-staging') {
+                            bat 'npm install'
+                            bat 'npm run build:staging'
                         }
                         script {
                             def targetPath = "C:\\nginx\\html\\grupo-01\\staging\\"
@@ -73,7 +80,9 @@ pipeline {
 
         stage('Cleanup') {
             steps {
-                powershell("Remove-Item -Path \"${WORKSPACE}\\frontend\\build-*\" -Recurse -Force -ErrorAction SilentlyContinue")
+                bat 'rmdir /S /Q frontend-dev'
+                bat 'rmdir /S /Q frontend-test'
+                bat 'rmdir /S /Q frontend-staging'
             }
         }
     }
