@@ -8,5 +8,40 @@
 
 ## Pasos para iniciar
 - Ejecutar npm install
-- Ejecutar npm start
+- Ejecutar npm run start
 
+## Pasos para ejecutar con Jenkins
+
+- Es crucial que Nginx se encuentre en la siguiente ruta: C:/nginx
+- Tener instalado nssm: https://nssm.cc/download
+- Agregar esta configuracion al archivo "nginx.conf", en la seccion de server para los 3 entornos.
+
+
+      server {
+              listen       80;
+              server_name  localhost;
+      
+              root C:/nginx/html;
+      
+              # DEV
+              location /grupo-01/dev/ {
+                  index index.html;
+                  try_files $uri /grupo-01/dev/index.html;
+              }
+      
+              # TEST
+              location /grupo-01/test/ {
+                  index index.html;
+                  try_files $uri /grupo-01/test/index.html;
+              }
+      
+              # STAGING
+              location /grupo-01/staging/ {
+                  index index.html;
+                  try_files $uri /grupo-01/staging/index.html;
+              }
+      }
+
+
+- Crear item en Jenkins con el SCM GIT, en el entorno de Jenkins llamar al repositorio principal e ingresar a directorio "frontend" del repo.
+- Ejecutar el Jenkinsfile.
