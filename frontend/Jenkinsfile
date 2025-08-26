@@ -14,15 +14,11 @@ pipeline {
             }
         }
 
-        stage('Prepare Workspace') {
+        stage('Install Dependencies') {
             steps {
-                bat 'mkdir frontend-dev || echo "Directory exists"'
-                bat 'mkdir frontend-test || echo "Directory exists"'
-                bat 'mkdir frontend-staging || echo "Directory exists"'
-                
-                bat 'xcopy frontend\\* frontend-dev\\ /E /I /Y'
-                bat 'xcopy frontend\\* frontend-test\\ /E /I /Y'
-                bat 'xcopy frontend\\* frontend-staging\\ /E /I /Y'
+                dir('frontend') {
+                    bat 'npm install'
+                }
             }
         }
 
@@ -30,42 +26,69 @@ pipeline {
             parallel {
                 stage('DEV') {
                     steps {
-                        dir('frontend-dev') {
-                            bat 'npm install'
-                            bat 'npm run build:dev'
-                        }
                         script {
+                            // Crear directorio temporal para dev
+                            def buildDir = "build-dev"
+                            bat "mkdir ${buildDir} || echo \"Directory exists\""
+                            
+                            // Build específico para dev
+                            dir('frontend') {
+                                bat 'npm run build:dev'
+                            }
+                            
+                            // Mover el build al directorio temporal
+                            bat "move frontend\\build ${buildDir}\\ || echo \"Move completed\""
+                            
+                            // Desplegar
                             def targetPath = "C:\\nginx\\html\\grupo-01\\dev\\"
                             powershell("Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
-                            powershell("Copy-Item -Path \"${WORKSPACE}\\frontend\\build-dev\\*\" -Destination \"${targetPath}\" -Recurse -Force")
+                            powershell("Copy-Item -Path \"${WORKSPACE}\\${buildDir}\\build\\*\" -Destination \"${targetPath}\" -Recurse -Force")
                         }
                     }
                 }
 
                 stage('TEST') {
                     steps {
-                        dir('frontend-test') {
-                            bat 'npm install'
-                            bat 'npm run build:test'
-                        }
                         script {
+                            // Crear directorio temporal para test
+                            def buildDir = "build-test"
+                            bat "mkdir ${buildDir} || echo \"Directory exists\""
+                            
+                            // Build específico para test
+                            dir('frontend') {
+                                bat 'npm run build:test'
+                            }
+                            
+                            // Mover el build al directorio temporal
+                            bat "move frontend\\build ${buildDir}\\ || echo \"Move completed\""
+                            
+                            // Desplegar
                             def targetPath = "C:\\nginx\\html\\grupo-01\\test\\"
                             powershell("Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
-                            powershell("Copy-Item -Path \"${WORKSPACE}\\frontend-test\\build\\*\" -Destination \"${targetPath}\" -Recurse -Force")
+                            powershell("Copy-Item -Path \"${WORKSPACE}\\${buildDir}\\build\\*\" -Destination \"${targetPath}\" -Recurse -Force")
                         }
                     }
                 }
 
                 stage('STAGING') {
                     steps {
-                        dir('frontend-staging') {
-                            bat 'npm install'
-                            bat 'npm run build:staging'
-                        }
                         script {
+                            // Crear directorio temporal para staging
+                            def buildDir = "build-staging"
+                            bat "mkdir ${buildDir} || echo \"Directory exists\""
+                            
+                            // Build específico para staging
+                            dir('frontend') {
+                                bat 'npm run build:staging'
+                            }
+                            
+                            // Mover el build al directorio temporal
+                            bat "move frontend\\build ${buildDir}\\ || echo \"Move completed\""
+                            
+                            // Desplegar
                             def targetPath = "C:\\nginx\\html\\grupo-01\\staging\\"
                             powershell("Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
-                            powershell("Copy-Item -Path \"${WORKSPACE}\\frontend\\build-staging\\*\" -Destination \"${targetPath}\" -Recurse -Force")
+                            powershell("Copy-Item -Path \"${WORKSPACE}\\${buildDir}\\build\\*\" -Destination \"${targetPath}\" -Recurse -Force")
                         }
                     }
                 }
@@ -77,12 +100,13 @@ pipeline {
                 powershell('net start nginx')
             }
         }
-
+        
         stage('Cleanup') {
             steps {
-                bat 'rmdir /S /Q frontend-dev'
-                bat 'rmdir /S /Q frontend-test'
-                bat 'rmdir /S /Q frontend-staging'
+                // Limpiar solo los directorios temporales de build
+                bat 'rmdir /S /Q build-dev 2>nul || echo "Already clean"'
+                bat 'rmdir /S /Q build-test 2>nul || echo "Already clean"'
+                bat 'rmdir /S /Q build-staging 2>nul || echo "Already clean"'
             }
         }
     }
