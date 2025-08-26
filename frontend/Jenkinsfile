@@ -19,6 +19,18 @@ pipeline {
             }
         }
 
+        stage('Clean old builds') {
+            steps {
+                dir('frontend') {
+                    powershell '''
+                        Remove-Item -Path build-dev -Recurse -Force -ErrorAction SilentlyContinue
+                        Remove-Item -Path build-test -Recurse -Force -ErrorAction SilentlyContinue
+                        Remove-Item -Path build-staging -Recurse -Force -ErrorAction SilentlyContinue
+                    '''
+                }
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
                 dir('frontend') {
