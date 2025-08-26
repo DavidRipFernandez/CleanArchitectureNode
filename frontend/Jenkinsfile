@@ -27,12 +27,12 @@ pipeline {
                 stage('DEV') {
                     steps {
                         dir('frontend') {
-                            bat 'npm run build:dev'
+                            bat 'npm run build:dev -- --output-path=build-dev'
                         }
                         script {
                             def targetPath = "C:\\nginx\\html\\grupo-01\\dev\\"
                             powershell("Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
-                            powershell("Copy-Item -Path \"${WORKSPACE}\\frontend\\build\\*\" -Destination \"${targetPath}\" -Recurse -Force")
+                            powershell("Copy-Item -Path \"${WORKSPACE}\\frontend\\build-dev\\*\" -Destination \"${targetPath}\" -Recurse -Force")
                         }
                     }
                 }
@@ -40,12 +40,12 @@ pipeline {
                 stage('TEST') {
                     steps {
                         dir('frontend') {
-                            bat 'npm run build:test'
+                            bat 'npm run build:test -- --output-path=build-test'
                         }
                         script {
                             def targetPath = "C:\\nginx\\html\\grupo-01\\test\\"
                             powershell("Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
-                            powershell("Copy-Item -Path \"${WORKSPACE}\\frontend\\build\\*\" -Destination \"${targetPath}\" -Recurse -Force")
+                            powershell("Copy-Item -Path \"${WORKSPACE}\\frontend\\build-test\\*\" -Destination \"${targetPath}\" -Recurse -Force")
                         }
                     }
                 }
@@ -53,12 +53,12 @@ pipeline {
                 stage('STAGING') {
                     steps {
                         dir('frontend') {
-                            bat 'npm run build:staging'
+                            bat 'npm run build:staging -- --output-path=build-staging'
                         }
                         script {
                             def targetPath = "C:\\nginx\\html\\grupo-01\\staging\\"
                             powershell("Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
-                            powershell("Copy-Item -Path \"${WORKSPACE}\\frontend\\build\\*\" -Destination \"${targetPath}\" -Recurse -Force")
+                            powershell("Copy-Item -Path \"${WORKSPACE}\\frontend\\build-staging\\*\" -Destination \"${targetPath}\" -Recurse -Force")
                         }
                     }
                 }
@@ -68,6 +68,12 @@ pipeline {
         stage('Start nginx process') {
             steps {
                 powershell('net start nginx')
+            }
+        }
+
+        stage('Cleanup') {
+            steps {
+                powershell("Remove-Item -Path \"${WORKSPACE}\\frontend\\build-*\" -Recurse -Force -ErrorAction SilentlyContinue")
             }
         }
     }
