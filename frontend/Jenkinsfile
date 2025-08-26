@@ -33,7 +33,6 @@ pipeline {
                     steps {
                         dir('frontend') {
                             bat 'npm run build:dev'
-                            powershell 'Move-Item -Path build -Destination build-dev -Force'
                         }
                         script {
                             def targetPath = "C:\\nginx\\html\\grupo-01\\dev\\"
@@ -47,7 +46,6 @@ pipeline {
                     steps {
                         dir('frontend') {
                             bat 'npm run build:test'
-                            powershell 'Move-Item -Path build -Destination build-test -Force'
                         }
                         script {
                             def targetPath = "C:\\nginx\\html\\grupo-01\\test\\"
@@ -61,7 +59,6 @@ pipeline {
                     steps {
                         dir('frontend') {
                             bat 'npm run build:staging'
-                            powershell 'Move-Item -Path build -Destination build-staging -Force'
                         }
                         script {
                             def targetPath = "C:\\nginx\\html\\grupo-01\\staging\\"
