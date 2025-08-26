@@ -12,7 +12,6 @@ const PrivateRoute = ({ children }) => {
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter basename={process.env.REACT_APP_BASENAME || "/"}>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route 
@@ -25,7 +24,6 @@ function App() {
           />
           <Route path="/" element={<Navigate to="/login" />} />
         </Routes>
-      </BrowserRouter>
     </AuthProvider>
   );
 }
