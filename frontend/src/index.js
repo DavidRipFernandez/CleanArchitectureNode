@@ -3,7 +3,7 @@ import App from "./App";
 import React from "react";
 import ReactDOM from "react-dom/client";
 
-const basename = process.env.REACT_APP_BASENAME || "/";
+const basename = process.env.PUBLIC_URL || "/";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
