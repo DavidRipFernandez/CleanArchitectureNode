@@ -12,10 +12,6 @@ pipeline {
                             New-Item -Path '${basePath}\\dev' -ItemType Directory | Out-Null
                             New-Item -Path '${basePath}\\test' -ItemType Directory | Out-Null
                             New-Item -Path '${basePath}\\staging' -ItemType Directory | Out-Null
-                        } else {
-                            if (-Not (Test-Path '${basePath}\\dev')) { New-Item -Path '${basePath}\\dev' -ItemType Directory | Out-Null }
-                            if (-Not (Test-Path '${basePath}\\test')) { New-Item -Path '${basePath}\\test' -ItemType Directory | Out-Null }
-                            if (-Not (Test-Path '${basePath}\\staging')) { New-Item -Path '${basePath}\\staging' -ItemType Directory | Out-Null }
                         }
                     """
                 }
