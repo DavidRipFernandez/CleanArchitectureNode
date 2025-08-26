@@ -5,7 +5,6 @@ pipeline {
         stage('Stop nginx process') {
             steps {
                 powershell('net stop nginx')
-                echo 'The nginx process has been stopped.'
             }
         }
 
@@ -33,9 +32,7 @@ pipeline {
                         script {
                             def targetPath = "C:\\nginx\\html\\grupo-01\\dev\\"
                             powershell("Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
-                            powershell("New-Item -ItemType Directory -Force -Path \"${targetPath}\"")
                             powershell("Copy-Item -Path \"${WORKSPACE}\\frontend\\build\\*\" -Destination \"${targetPath}\" -Recurse -Force")
-                            echo "✅ Deploy to DEV done."
                         }
                     }
                 }
@@ -48,9 +45,7 @@ pipeline {
                         script {
                             def targetPath = "C:\\nginx\\html\\grupo-01\\test\\"
                             powershell("Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
-                            powershell("New-Item -ItemType Directory -Force -Path \"${targetPath}\"")
                             powershell("Copy-Item -Path \"${WORKSPACE}\\frontend\\build\\*\" -Destination \"${targetPath}\" -Recurse -Force")
-                            echo "✅ Deploy to TEST done."
                         }
                     }
                 }
@@ -63,9 +58,7 @@ pipeline {
                         script {
                             def targetPath = "C:\\nginx\\html\\grupo-01\\staging\\"
                             powershell("Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
-                            powershell("New-Item -ItemType Directory -Force -Path \"${targetPath}\"")
                             powershell("Copy-Item -Path \"${WORKSPACE}\\frontend\\build\\*\" -Destination \"${targetPath}\" -Recurse -Force")
-                            echo "✅ Deploy to STAGING done."
                         }
                     }
                 }
@@ -75,17 +68,7 @@ pipeline {
         stage('Start nginx process') {
             steps {
                 powershell('net start nginx')
-                echo 'The nginx process has been started.'
             }
-        }
-    }
-
-    post {
-        always {
-            echo '🚀 Despliegue completado en DEV, TEST y STAGING dentro de grupo-01.'
-        }
-        failure {
-            echo '❌ Despliegue falló, revisa los logs.'
         }
     }
 }

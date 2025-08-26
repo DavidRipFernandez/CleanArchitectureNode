@@ -18,10 +18,10 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "clean": "rimraf build",
     "build:dev": "npm run clean && set \"PUBLIC_URL=/grupo-01/dev\" && react-scripts build",
     "build:test": "npm run clean && set \"PUBLIC_URL=/grupo-01/test\" && react-scripts build",
-    "build:staging": "npm run clean && set \"PUBLIC_URL=/grupo-01/staging\" && react-scripts build",
-    "clean": "rimraf build"
+    "build:staging": "npm run clean && set \"PUBLIC_URL=/grupo-01/staging\" && react-scripts build"
   },
   "eslintConfig": {
     "extends": "react-app"
