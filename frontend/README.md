@@ -4,7 +4,6 @@
 - React & DOM v19.1.1 
 - Bootstrap v5.3.7
 - Axios 1.11.0
-- Puerto: 4000
 
 ## Pasos para iniciar
 - Ejecutar npm install
@@ -43,5 +42,6 @@
       }
 
 
+- Nota: puede usar el puerto que desee con Nginx, lo que interesa es definir los directorios.
 - Crear item en Jenkins con el SCM GIT, en el entorno de Jenkins llamar al repositorio principal e ingresar a directorio "frontend" del repo.
 - Ejecutar el Jenkinsfile.
