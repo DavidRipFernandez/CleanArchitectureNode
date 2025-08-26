@@ -2,6 +2,26 @@ pipeline {
     agent any
 
     stages {
+        stage('Prepare Directories') {
+            steps {
+                script {
+                    def basePath = "C:\\nginx\\html\\grupo-01"
+                    powershell """
+                        if (-Not (Test-Path '${basePath}')) {
+                            New-Item -Path '${basePath}' -ItemType Directory | Out-Null
+                            New-Item -Path '${basePath}\\dev' -ItemType Directory | Out-Null
+                            New-Item -Path '${basePath}\\test' -ItemType Directory | Out-Null
+                            New-Item -Path '${basePath}\\staging' -ItemType Directory | Out-Null
+                        } else {
+                            if (-Not (Test-Path '${basePath}\\dev')) { New-Item -Path '${basePath}\\dev' -ItemType Directory | Out-Null }
+                            if (-Not (Test-Path '${basePath}\\test')) { New-Item -Path '${basePath}\\test' -ItemType Directory | Out-Null }
+                            if (-Not (Test-Path '${basePath}\\staging')) { New-Item -Path '${basePath}\\staging' -ItemType Directory | Out-Null }
+                        }
+                    """
+                }
+            }
+        }
+
         stage('Stop nginx process') {
             steps {
                 powershell('''
