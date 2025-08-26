@@ -18,10 +18,10 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "build:dev": "cross-env REACT_APP_BASENAME=/grupo-01/dev react-scripts build",
-    "build:test": "cross-env REACT_APP_BASENAME=/grupo-01/test react-scripts build",
-    "build:staging": "cross-env REACT_APP_BASENAME=/grupo-01/staging react-scripts build",
-    "build:prod": "cross-env REACT_APP_BASENAME=/ react-scripts build"
+    "build:dev": "npm run clean && set \"PUBLIC_URL=/grupo-01/dev\" && react-scripts build",
+    "build:test": "npm run clean && set \"PUBLIC_URL=/grupo-01/test\" && react-scripts build",
+    "build:staging": "npm run clean && set \"PUBLIC_URL=/grupo-01/staging\" && react-scripts build",
+    "clean": "rimraf build"
   },
   "eslintConfig": {
     "extends": "react-app"
