@@ -19,9 +19,12 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "clean": "rimraf build",
-    "build:dev": "npm run clean && set \"PUBLIC_URL=/grupo-01/dev\" && react-scripts build && powershell -Command \"Move-Item build build-dev -Force\"",
-    "build:test": "npm run clean && set \"PUBLIC_URL=/grupo-01/test\" && react-scripts build && powershell -Command \"Move-Item build build-dev -Force\"",
-    "build:staging": "npm run clean && set \"PUBLIC_URL=/grupo-01/staging\" && react-scripts build && powershell -Command \"Move-Item build build-dev -Force\""
+    "clean:dev": "rimraf build-dev",
+    "clean:test": "rimraf build-test",
+    "clean:staging": "rimraf build-staging",
+    "build:dev": "npm run clean:dev && set \"PUBLIC_URL=/grupo-01/dev\" && set \"BUILD_PATH=build-dev\" && react-scripts build",
+    "build:test": "npm run clean:test && set \"PUBLIC_URL=/grupo-01/test\" && set \"BUILD_PATH=build-test\" && react-scripts build",
+    "build:staging": "npm run clean:stg && set \"PUBLIC_URL=/grupo-01/staging\" && set \"BUILD_PATH=build-staging\" && react-scripts build"
   },
   "eslintConfig": {
     "extends": "react-app"
