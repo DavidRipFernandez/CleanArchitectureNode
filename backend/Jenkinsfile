@@ -20,18 +20,18 @@ pipeline {
         stage('Instalar dependencias') {
             steps {
                 dir('backend') {
-                    bat "npm install -g pm2" 
                     bat "npm install"
                 }
             }
         }
 
 
-        stage('Levantar backend en paralelo') {
+        stage('Levantar backend en ambientes') {
             steps {
                 dir('backend') {
-                    bat "pm2 start ecosystem.config.js"
-                    bat "pm2 save"
+                    bat "npm run dev"
+                    bat "npm run test"
+                    bat "npm run staging"
                 }
             }
         }
