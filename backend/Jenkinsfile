@@ -7,6 +7,15 @@ pipeline {
     }
 
     stages {
+
+        stage('Debug') {
+            steps {
+                bat "whoami"
+                bat "where pm2"
+                bat "pm2 -v"
+            }
+        }
+
         stage('Checkout') {
             steps {
                 git branch: 'main',
@@ -27,20 +36,27 @@ pipeline {
                 parallel(
                     Dev: {
                         dir('backend') {
-                            bat "start /B npm run dev"
+                            bat "pm2 start npm --name backend-dev -- run dev"
                         }
                     },
                     Test: {
                         dir('backend') {
-                            bat "start /B npm run test"
+                            bat "pm2 start npm --name backend-test -- run test"
                         }
                     },
                     Staging: {
                         dir('backend') {
-                            bat "start /B npm run staging"
+                            bat "pm2 start npm --name backend-staging -- run staging"
                         }
                     }
                 )
+            }
+        }
+
+        stage('Guardar configuración de PM2') {
+            steps {
+                bat "pm2 save"
+                bat "pm2 startup"
             }
         }
 
@@ -49,16 +65,19 @@ pipeline {
                 parallel(
                     Dev: {
                         powershell """
+                        do { Start-Sleep -Seconds 1 } until (Test-NetConnection -ComputerName localhost -Port 3001).TcpTestSucceeded
                         curl -f http://localhost:3001/swagger
                         """
                     },
                     Test: {
                         powershell """
+                        do { Start-Sleep -Seconds 1 } until (Test-NetConnection -ComputerName localhost -Port 3002).TcpTestSucceeded
                         curl -f http://localhost:3002/swagger
                         """
                     },
                     Staging: {
                         powershell """
+                        do { Start-Sleep -Seconds 1 } until (Test-NetConnection -ComputerName localhost -Port 3003).TcpTestSucceeded
                         curl -f http://localhost:3003/swagger
                         """
                     }
