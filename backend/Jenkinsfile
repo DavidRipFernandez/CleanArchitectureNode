@@ -4,6 +4,7 @@ pipeline {
     environment {
         NODE_HOME = 'C:\\Program Files\\nodejs'
         PATH = "${NODE_HOME};${env.PATH}"
+        NSSM_PATH = 'C:\\nssm\\win64\\nssm.exe'
     }
 
     stages {
@@ -25,13 +26,28 @@ pipeline {
         }
 
 
-        stage('Levantar backend en ambientes') {
+        stage('Levantar backend en dev') {
             steps {
-                dir('backend') {
-                    bat "nssm start backend-dev"
-                    bat "nssm start backend-test"
-                    bat "nssm start backend-staging"
-                }
+                parallel(
+                    Dev: {
+                        dir('backend') {
+                            bat "\"${env.NSSM_PATH}\" install backend-dev cmd /c \"set NODE_ENV=dev && set PORT=3001 && node src/index.js\""
+                            bat "\"${env.NSSM_PATH}\" start backend-dev"
+                        }
+                    },
+                    Test: {
+                        dir('backend') {
+                            bat "\"${env.NSSM_PATH}\" install backend-test cmd /c \"set NODE_ENV=test && set PORT=3002 && node src/index.js\""
+                            bat "\"${env.NSSM_PATH}\" start backend-test"
+                        }
+                    },
+                    Staging: {
+                        dir('backend') {
+                            bat "\"${env.NSSM_PATH}\" install backend-staging cmd /c \"set NODE_ENV=staging && set PORT=3003 && node src/index.js\""
+                            bat "\"${env.NSSM_PATH}\" start backend-staging"
+                        }
+                    }
+                )
             }
         }
 
