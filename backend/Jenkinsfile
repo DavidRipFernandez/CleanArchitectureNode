@@ -27,17 +27,17 @@ pipeline {
                 parallel(
                     Dev: {
                         dir('backend') {
-                            bat "npm run dev"
+                            bat "start /B npm run dev"
                         }
                     },
                     Test: {
                         dir('backend') {
-                            bat "npm run test"
+                            bat "start /B npm run test"
                         }
                     },
                     Staging: {
                         dir('backend') {
-                            bat "npm run staging"
+                            bat "start /B npm run staging"
                         }
                     }
                 )
