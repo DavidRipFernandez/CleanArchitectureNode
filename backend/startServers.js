@@ -1,12 +1,18 @@
-// startServers.js
-const concurrently = require('concurrently');
+const { spawn } = require('child_process');
 
-concurrently([
-    { command: 'npm run dev', name: 'dev', prefixColor: 'green' },
-    { command: 'npm run test', name: 'test', prefixColor: 'yellow' },
-    { command: 'npm run staging', name: 'staging', prefixColor: 'magenta' }
-], {
-    killOthersOnFailure: false,
-    restartTries: 0,
-    detached: true
+const envs = [
+    { NODE_ENV: 'dev', PORT: 3001 },
+    { NODE_ENV: 'test', PORT: 3002 },
+    { NODE_ENV: 'staging', PORT: 3003 }
+];
+
+envs.forEach(cfg => {
+    const proc = spawn('node', ['src/index.js'], {
+        env: { ...process.env, ...cfg },
+        stdio: 'ignore',
+        detached: true
+    });
+    proc.unref();
 });
+
+console.log('✅ Todos los servidores fueron lanzados en segundo plano.');
