@@ -5,9 +5,9 @@
   "license": "MIT",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "start /B cmd /c \"set NODE_ENV=dev && set PORT=3001 && node src/index.js\"",
-    "test": "start /B cmd /c \"set NODE_ENV=test && set PORT=3002 && node src/index.js\"",
-    "staging": "start /B cmd /c \"set NODE_ENV=staging && set PORT=3003 && node src/index.js\""
+    "dev": "start cmd /c \"set NODE_ENV=dev && set PORT=3001 && node src/index.js\"",
+    "test": "start cmd /c \"set NODE_ENV=test && set PORT=3002 && node src/index.js\"",
+    "staging": "start cmd /c \"set NODE_ENV=staging && set PORT=3003 && node src/index.js\""
   },
   "dependencies": {
     "cors": "^2.8.5",

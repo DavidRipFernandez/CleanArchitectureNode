@@ -41,19 +41,16 @@ pipeline {
                 parallel(
                     Dev: {
                         powershell """
-                        do { Start-Sleep -Seconds 1 } until (Test-NetConnection -ComputerName localhost -Port 3001).TcpTestSucceeded
                         curl -f http://localhost:3001/swagger
                         """
                     },
                     Test: {
                         powershell """
-                        do { Start-Sleep -Seconds 1 } until (Test-NetConnection -ComputerName localhost -Port 3002).TcpTestSucceeded
                         curl -f http://localhost:3002/swagger
                         """
                     },
                     Staging: {
                         powershell """
-                        do { Start-Sleep -Seconds 1 } until (Test-NetConnection -ComputerName localhost -Port 3003).TcpTestSucceeded
                         curl -f http://localhost:3003/swagger
                         """
                     }
