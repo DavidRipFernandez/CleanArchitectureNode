@@ -18,6 +18,7 @@ pipeline {
             steps {
                 dir('backend') {
                     bat "npm install"
+                    bar "npm install -g pm2"
                 }
             }
         }
@@ -47,9 +48,9 @@ pipeline {
         stage('Verificar backend') {
             steps {
                 parallel(
-                    Dev: { bat "curl -f http://localhost:3000/swagger" },
-                    Test: { bat "curl -f http://localhost:3001/swagger" },
-                    Staging: { bat "curl -f http://localhost:3002/swagger" }
+                    Dev: { bat "curl -f http://localhost:3001/swagger" },
+                    Test: { bat "curl -f http://localhost:3002/swagger" },
+                    Staging: { bat "curl -f http://localhost:3003/swagger" }
                 )
             }
         }

@@ -5,9 +5,9 @@
   "license": "MIT",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "set NODE_ENV=dev && set PORT=3000 && node src/index.js",
-    "test": "set NODE_ENV=test && set PORT=3001 && node src/index.js",
-    "staging": "set NODE_ENV=staging && set PORT=3002 && node src/index.js"
+    "dev": "set NODE_ENV=dev && set PORT=3001 && pm2 start src/index.js --name backend-dev --watch",
+    "test": "set NODE_ENV=test && set PORT=3002 && pm2 start src/index.js --name backend-test --watch",
+    "staging": "set NODE_ENV=staging && set PORT=3003 && pm2 start src/index.js --name backend-staging --watch"
   },
   "dependencies": {
     "cors": "^2.8.5",
