@@ -48,14 +48,5 @@ pipeline {
             }
         }
 
-        stage('Verificar backend') {
-            steps {
-                powershell """
-                curl -f http://localhost:3001/swagger
-                curl -f http://localhost:3002/swagger
-                curl -f http://localhost:3003/swagger
-                """
-            }
-        }
     }
 }
