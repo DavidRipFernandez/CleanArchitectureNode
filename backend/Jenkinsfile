@@ -30,27 +30,20 @@ pipeline {
                 parallel(
                     Dev: {
                         dir('backend') {
-                            bat "pm2 start npm --name backend-dev -- run dev"
+                            bat 'pm2 start "npm run dev" --name backend-dev'
                         }
                     },
                     Test: {
                         dir('backend') {
-                            bat "pm2 start npm --name backend-test -- run test"
+                            bat 'pm2 start "npm run test" --name backend-test'
                         }
                     },
                     Staging: {
                         dir('backend') {
-                            bat "pm2 start npm --name backend-staging -- run staging"
+                            bat 'pm2 start "npm run staging" --name backend-staging'
                         }
                     }
                 )
-            }
-        }
-
-        stage('Guardar configuración de PM2') {
-            steps {
-                bat "pm2 save"
-                bat "pm2 startup"
             }
         }
 
