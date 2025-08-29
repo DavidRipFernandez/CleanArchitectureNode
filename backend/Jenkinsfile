@@ -32,7 +32,6 @@ pipeline {
                 dir('backend') {
                     bat "pm2 start ecosystem.config.js"
                     bat "pm2 save"
-                    bat "pm2 startup"
                 }
             }
         }
