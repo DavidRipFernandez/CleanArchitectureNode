@@ -22,29 +22,36 @@ pipeline {
             }
         }
 
-        stage('Levantar backend') {
+        stage('Levantar backend paralelo') {
             steps {
-                dir('backend') {
-                    bat "node src/index.js"
-                }
+                parallel(
+                    Dev: {
+                        dir('backend') {
+                            bat "npm run dev"
+                        }
+                    },
+                    Test: {
+                        dir('backend') {
+                            bat "npm run test"
+                        }
+                    },
+                    Staging: {
+                        dir('backend') {
+                            bat "npm run staging"
+                        }
+                    }
+                )
             }
         }
 
         stage('Verificar backend') {
             steps {
-                bat """
-                curl -f http://localhost:%PORT%/swagger
-                """
+                parallel(
+                    Dev: { bat "curl -f http://localhost:3000/swagger" },
+                    Test: { bat "curl -f http://localhost:3001/swagger" },
+                    Staging: { bat "curl -f http://localhost:3002/swagger" }
+                )
             }
-        }
-    }
-
-    post {
-        success {
-            echo "🚀 Backend levantado con éxito en la carpeta backend!"
-        }
-        failure {
-            echo "💀 Algo se rompió en el pipeline bro..."
         }
     }
 }
