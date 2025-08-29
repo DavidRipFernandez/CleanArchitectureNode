@@ -27,25 +27,11 @@ pipeline {
         }
 
 
-        stage('Levantar backend paralelo') {
+        stage('Levantar backend en paralelo') {
             steps {
-                parallel(
-                    Dev: {
-                        dir('backend') {
-                            bat 'pm2 start "npm run dev" --name backend-dev'
-                        }
-                    },
-                    Test: {
-                        dir('backend') {
-                            bat 'pm2 start "npm run test" --name backend-test'
-                        }
-                    },
-                    Staging: {
-                        dir('backend') {
-                            bat 'pm2 start "npm run staging" --name backend-staging'
-                        }
-                    }
-                )
+                bat "pm2 start ecosystem.config.js"
+                bat "pm2 save"
+                bat "pm2 startup"
             }
         }
 
