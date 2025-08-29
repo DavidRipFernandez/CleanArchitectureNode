@@ -28,7 +28,8 @@ pipeline {
         stage('Levantar backend en ambientes') {
             steps {
                 dir('backend') {
-                    bat "npm run all"
+                    bat "npm run start-all"
+                    
                 }
             }
         }
