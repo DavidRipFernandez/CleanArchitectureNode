@@ -9,4 +9,4 @@ concurrently([
     killOthersOnFailure: false,
     restartTries: 0,
     detached: true
-}).catch(() => { });
+});
