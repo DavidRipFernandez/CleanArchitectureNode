@@ -5,9 +5,10 @@
   "license": "MIT",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "start cmd /c \"set NODE_ENV=dev && set PORT=3001 && node src/index.js\"",
-    "test": "start cmd /c \"set NODE_ENV=test && set PORT=3002 && node src/index.js\"",
-    "staging": "start cmd /c \"set NODE_ENV=staging && set PORT=3003 && node src/index.js\""
+    "dev": "set NODE_ENV=dev && set PORT=3001 && node src/index.js",
+    "test": "set NODE_ENV=test && set PORT=3002 && node src/index.js",
+    "staging": "set NODE_ENV=staging && set PORT=3003 && node src/index.js",
+    "all": "concurrently \"npm run dev\" \"npm run test\" \"npm run staging\""
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -20,6 +21,7 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
+    "concurrently": "^9.2.1",
     "jest": "^30.0.5",
     "nodemon": "^3.1.0",
     "supertest": "^7.1.4"

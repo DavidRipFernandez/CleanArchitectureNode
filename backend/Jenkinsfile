@@ -4,7 +4,6 @@ pipeline {
     environment {
         NODE_HOME = 'C:\\Program Files\\nodejs'
         PATH = "${NODE_HOME};${env.PATH}"
-        PM2_HOME = "C:\\nvm4w\\nodejs\\.pm2"
     }
 
     stages {
@@ -29,32 +28,18 @@ pipeline {
         stage('Levantar backend en ambientes') {
             steps {
                 dir('backend') {
-                    bat "npm run dev"
-                    bat "npm run test"
-                    bat "npm run staging"
+                    bat "npm run all"
                 }
             }
         }
 
         stage('Verificar backend') {
             steps {
-                parallel(
-                    Dev: {
-                        powershell """
-                        curl -f http://localhost:3001/swagger
-                        """
-                    },
-                    Test: {
-                        powershell """
-                        curl -f http://localhost:3002/swagger
-                        """
-                    },
-                    Staging: {
-                        powershell """
-                        curl -f http://localhost:3003/swagger
-                        """
-                    }
-                )
+                powershell """
+                curl -f http://localhost:3001/swagger
+                curl -f http://localhost:3002/swagger
+                curl -f http://localhost:3003/swagger
+                """
             }
         }
     }
