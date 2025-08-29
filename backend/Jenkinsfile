@@ -26,14 +26,6 @@ pipeline {
             }
         }
 
-        stage('Detener procesos previos') {
-            steps {
-                script {
-                    bat 'pm2 delete all || echo "No hay procesos previos"'
-                    bat 'pm2 kill || echo "PM2 no estaba ejecutándose"'
-                }
-            }
-        }
 
         stage('Levantar backend paralelo') {
             steps {
