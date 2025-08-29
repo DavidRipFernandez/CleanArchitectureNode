@@ -4,17 +4,11 @@ pipeline {
     environment {
         NODE_HOME = 'C:\\Program Files\\nodejs'
         PATH = "${NODE_HOME};${env.PATH}"
+        PM2_HOME = "C:\\nvm4w\\nodejs\\.pm2"
     }
 
     stages {
 
-        stage('Debug') {
-            steps {
-                bat "whoami"
-                bat "where pm2"
-                bat "pm2 -v"
-            }
-        }
 
         stage('Checkout') {
             steps {
