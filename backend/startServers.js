@@ -1,16 +1,12 @@
 // startServers.js
-const { spawn } = require('child_process');
 const concurrently = require('concurrently');
 
-const proc = concurrently([
-    { command: 'npm run dev', name: 'dev' },
-    { command: 'npm run test', name: 'test' },
-    { command: 'npm run staging', name: 'staging' }
+concurrently([
+    { command: 'npm run dev', name: 'dev', prefixColor: 'green' },
+    { command: 'npm run test', name: 'test', prefixColor: 'yellow' },
+    { command: 'npm run staging', name: 'staging', prefixColor: 'magenta' }
 ], {
-    killOthers: ['failure', 'success'],
+    killOthersOnFailure: false,
     restartTries: 0,
-    detached: true,
-});
-
-proc.result.then(() => { }, () => { });
-proc.processes.forEach(p => p.unref());
+    detached: true
+}).catch(() => { });
