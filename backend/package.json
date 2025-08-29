@@ -8,7 +8,7 @@
     "dev": "set NODE_ENV=dev && set PORT=3001 && node src/index.js",
     "test": "set NODE_ENV=test && set PORT=3002 && node src/index.js",
     "staging": "set NODE_ENV=staging && set PORT=3003 && node src/index.js",
-    "all": "start /B concurrently \"npm run dev\" \"npm run test\" \"npm run staging\""
+    "all": "start cmd /k \"npm run dev\" & start cmd /k \"npm run test\" & start cmd /k \"npm run staging\""
   },
   "dependencies": {
     "cors": "^2.8.5",
