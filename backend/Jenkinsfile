@@ -31,17 +31,23 @@ pipeline {
                 parallel(
                     Dev: {
                         dir('backend') {
-                            bat "\"${env.NSSM_PATH}\" start backend-dev"
+                            bat """
+                            "${env.NSSM_PATH}" start backend-dev || exit 0
+                            """
                         }
                     },
                     Test: {
                         dir('backend') {
-                            bat "\"${env.NSSM_PATH}\" start backend-test"
+                            bat """
+                            "${env.NSSM_PATH}" start backend-test || exit 0
+                            """
                         }
                     },
                     Staging: {
                         dir('backend') {
-                            bat "\"${env.NSSM_PATH}\" start backend-staging"
+                            bat """
+                            "${env.NSSM_PATH}" start backend-staging || exit 0
+                            """
                         }
                     }
                 )
