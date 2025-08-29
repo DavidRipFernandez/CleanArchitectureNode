@@ -1,0 +1,54 @@
+pipeline {
+    agent any
+
+    tools {
+        nodejs "NodeJS_20"
+    }
+
+    environment {
+        NODE_HOME = 'C:\\Program Files\\nodejs'
+        PATH = "${NODE_HOME};${env.PATH}"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/DavidRipFernandez/CleanArchitectureNode.git'
+            }
+        }
+
+        stage('Instalar dependencias') {
+            steps {
+                dir('backend') {
+                    bat "npm install"
+                }
+            }
+        }
+
+        stage('Levantar backend') {
+            steps {
+                dir('backend') {
+                    bat "node src/index.js"
+                }
+            }
+        }
+
+        stage('Verificar backend') {
+            steps {
+                bat """
+                curl -f http://localhost:%PORT%/swagger
+                """
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "🚀 Backend levantado con éxito en la carpeta backend!"
+        }
+        failure {
+            echo "💀 Algo se rompió en el pipeline bro..."
+        }
+    }
+}
