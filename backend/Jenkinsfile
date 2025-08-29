@@ -28,11 +28,21 @@ pipeline {
         stage('Levantar backend en ambientes') {
             steps {
                 dir('backend') {
-                    bat "npm run start-all"
-                    
+                    bat "nssm start backend-dev"
+                    bat "nssm start backend-test"
+                    bat "nssm start backend-staging"
                 }
             }
         }
 
+        stage('Verificar backend') {
+            steps {
+                powershell """
+                curl -f http://localhost:3001/swagger
+                curl -f http://localhost:3002/swagger
+                curl -f http://localhost:3003/swagger
+                """
+            }
+        }
     }
 }
