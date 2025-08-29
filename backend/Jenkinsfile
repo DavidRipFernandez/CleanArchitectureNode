@@ -20,7 +20,17 @@ pipeline {
         stage('Instalar dependencias') {
             steps {
                 dir('backend') {
+                    bat "npm install -g pm2" 
                     bat "npm install"
+                }
+            }
+        }
+
+        stage('Detener procesos previos') {
+            steps {
+                script {
+                    bat 'pm2 delete all || echo "No hay procesos previos"'
+                    bat 'pm2 kill || echo "PM2 no estaba ejecutándose"'
                 }
             }
         }
