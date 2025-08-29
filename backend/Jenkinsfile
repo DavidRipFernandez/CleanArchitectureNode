@@ -31,19 +31,16 @@ pipeline {
                 parallel(
                     Dev: {
                         dir('backend') {
-                            bat "\"${env.NSSM_PATH}\" install backend-dev cmd /c \"set NODE_ENV=dev && set PORT=3001 && node src/index.js\""
                             bat "\"${env.NSSM_PATH}\" start backend-dev"
                         }
                     },
                     Test: {
                         dir('backend') {
-                            bat "\"${env.NSSM_PATH}\" install backend-test cmd /c \"set NODE_ENV=test && set PORT=3002 && node src/index.js\""
                             bat "\"${env.NSSM_PATH}\" start backend-test"
                         }
                     },
                     Staging: {
                         dir('backend') {
-                            bat "\"${env.NSSM_PATH}\" install backend-staging cmd /c \"set NODE_ENV=staging && set PORT=3003 && node src/index.js\""
                             bat "\"${env.NSSM_PATH}\" start backend-staging"
                         }
                     }
