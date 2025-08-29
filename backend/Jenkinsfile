@@ -28,7 +28,9 @@ pipeline {
         stage('Levantar backend en ambientes') {
             steps {
                 dir('backend') {
-                    bat "npm run all"
+                    powershell '''
+                        Start-Process -FilePath "npm" -ArgumentList "run all" -WindowStyle Minimized
+                    '''
                 }
             }
         }
