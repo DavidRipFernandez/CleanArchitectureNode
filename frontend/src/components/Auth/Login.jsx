@@ -24,7 +24,7 @@ function Login() {
   return (
     <div className="container d-flex vh-100 justify-content-center align-items-center">
       <div className="card p-4 shadow" style={{ width: '400px' }}>
-        <h2 className="text-center mb-4">Iniciar Sesión</h2>
+        <h2 className="text-center mb-4">Iniciar Sesión en Test</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <input
