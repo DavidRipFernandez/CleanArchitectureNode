@@ -1,0 +1,108 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Prepare Directories') {
+            steps {
+                script {
+                    def basePath = "C:\\nginx\\html\\grupo-01"
+                    powershell """
+                        if (-Not (Test-Path '${basePath}')) {
+                            New-Item -Path '${basePath}' -ItemType Directory | Out-Null
+                            New-Item -Path '${basePath}\\dev' -ItemType Directory | Out-Null
+                            New-Item -Path '${basePath}\\test' -ItemType Directory | Out-Null
+                            New-Item -Path '${basePath}\\staging' -ItemType Directory | Out-Null
+                        }
+                    """
+                }
+            }
+        }
+
+        stage('Stop nginx process') {
+            steps {
+                powershell('''
+                    $svc = Get-Service -Name nginx -ErrorAction SilentlyContinue
+                    if ($svc -and $svc.Status -eq "Running") {
+                        net stop nginx
+                    }
+                ''')
+            }
+        }
+
+        stage('Checkout Github Project') {
+            steps {
+                git(url: 'https://github.com/DavidRipFernandez/CleanArchitectureNode', branch: 'main')
+            }
+        }
+
+        stage('Clean old builds') {
+            steps {
+                dir('frontend') {
+                    powershell '''
+                        Remove-Item -Path build-dev -Recurse -Force -ErrorAction SilentlyContinue
+                        Remove-Item -Path build-test -Recurse -Force -ErrorAction SilentlyContinue
+                        Remove-Item -Path build-staging -Recurse -Force -ErrorAction SilentlyContinue
+                    '''
+                }
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                dir('frontend') {
+                    bat 'npm install'
+                }
+            }
+        }
+
+        stage('Build & Deploy in Parallel') {
+            parallel {
+                stage('DEV') {
+                    steps {
+                        dir('frontend') {
+                            bat 'npm run build:dev'
+                        }
+                        script {
+                            def targetPath = "C:\\nginx\\html\\grupo-01\\dev\\"
+                            powershell("Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
+                            powershell("Copy-Item -Path \"${WORKSPACE}\\frontend\\build-dev\\*\" -Destination \"${targetPath}\" -Recurse -Force")
+                        }
+                    }
+                }
+
+                stage('TEST') {
+                    steps {
+                        dir('frontend') {
+                            bat 'npm run build:test'
+                        }
+                        script {
+                            def targetPath = "C:\\nginx\\html\\grupo-01\\test\\"
+                            powershell("Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
+                            powershell("Copy-Item -Path \"${WORKSPACE}\\frontend\\build-test\\*\" -Destination \"${targetPath}\" -Recurse -Force")
+                        }
+                    }
+                }
+
+                stage('STAGING') {
+                    steps {
+                        dir('frontend') {
+                            bat 'npm run build:staging'
+                        }
+                        script {
+                            def targetPath = "C:\\nginx\\html\\grupo-01\\staging\\"
+                            powershell("Remove-Item -Path \"${targetPath}*\" -Recurse -Force -ErrorAction SilentlyContinue")
+                            powershell("Copy-Item -Path \"${WORKSPACE}\\frontend\\build-staging\\*\" -Destination \"${targetPath}\" -Recurse -Force")
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Start nginx process') {
+            steps {
+                powershell('net start nginx')
+            }
+        }
+        
+    }
+}

@@ -17,7 +17,14 @@
     "start": "set PORT=4000 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "clean": "rimraf build",
+    "clean:dev": "rimraf build-dev",
+    "clean:test": "rimraf build-test",
+    "clean:staging": "rimraf build-staging",
+    "build:dev": "npm run clean:dev && set \"PUBLIC_URL=/grupo-01/dev\" && set \"BUILD_PATH=build-dev\" && react-scripts build",
+    "build:test": "npm run clean:test && set \"PUBLIC_URL=/grupo-01/test\" && set \"BUILD_PATH=build-test\" && react-scripts build",
+    "build:staging": "npm run clean:staging && set \"PUBLIC_URL=/grupo-01/staging\" && set \"BUILD_PATH=build-staging\" && react-scripts build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -33,5 +40,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "cross-env": "^10.0.0"
   }
 }

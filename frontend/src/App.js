@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { useAuth } from './hooks/useAuth';
 import Login from './components/Auth/Login';
@@ -12,7 +12,6 @@ const PrivateRoute = ({ children }) => {
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route 
@@ -25,7 +24,6 @@ function App() {
           />
           <Route path="/" element={<Navigate to="/login" />} />
         </Routes>
-      </BrowserRouter>
     </AuthProvider>
   );
 }

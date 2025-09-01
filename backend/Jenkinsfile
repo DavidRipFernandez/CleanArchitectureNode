@@ -1,0 +1,58 @@
+pipeline {
+    agent any
+
+    environment {
+        NODE_HOME = 'C:\\Program Files\\nodejs'
+        PATH = "${NODE_HOME};${env.PATH}"
+        NSSM_PATH = 'C:\\nssm\\win64\\nssm.exe'
+    }
+
+    stages {
+
+
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/DavidRipFernandez/CleanArchitectureNode.git'
+            }
+        }
+
+        stage('Instalar dependencias') {
+            steps {
+                dir('backend') {
+                    bat "npm install"
+                }
+            }
+        }
+
+
+        stage('Levantar backend en dev') {
+            steps {
+                parallel(
+                    Dev: {
+                        dir('backend') {
+                            bat """
+                            "${env.NSSM_PATH}" start backend-dev || exit 0
+                            """
+                        }
+                    },
+                    Test: {
+                        dir('backend') {
+                            bat """
+                            "${env.NSSM_PATH}" start backend-test || exit 0
+                            """
+                        }
+                    },
+                    Staging: {
+                        dir('backend') {
+                            bat """
+                            "${env.NSSM_PATH}" start backend-staging || exit 0
+                            """
+                        }
+                    }
+                )
+            }
+        }
+
+    }
+}
